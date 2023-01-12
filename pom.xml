@@ -43,7 +43,7 @@
 			<scope>test</scope>
 		</dependency>
 
-<!--		Swagger-->
+		<!-- Swagger -->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
@@ -55,11 +55,9 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>io.springfox</groupId>-->
-<!--			<artifactId>springfox-schema</artifactId>-->
-<!--			<version>${swagger.version}</version>-->
-<!--		</dependency>-->
+
+		<!-- Seguridad Por Roles -->
+
 
 		<dependency>
 			<groupId>junit</groupId>
