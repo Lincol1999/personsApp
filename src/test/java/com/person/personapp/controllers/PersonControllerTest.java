@@ -14,6 +14,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -35,7 +37,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(PersonController.class) //Sirve para simular que estamos golpeando al servicio.
-@AutoConfigureMockMvc
+
+//Haremos un test con un usuario mockeado
+// username: el nombre del usuario mockeado o simulado.
+@WithMockUser(username = "user", authorities = {"ROLE_USER", "ROLE_ADMIN"})
 class PersonControllerTest {
 
     @Autowired
@@ -126,6 +131,7 @@ class PersonControllerTest {
 
         when(personService.createPerson(any(Person.class))).thenReturn(persons.get(0));
         RequestBuilder request = post(BASE_PATH)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()) //Deshabilitamos los Cors (csrf()) - Si no lo hacemos nos saldra el error 403 - No autorizado para realizar dicha acción.
                 .accept(MediaType.APPLICATION_JSON).content(newPersonJson)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -135,11 +141,13 @@ class PersonControllerTest {
 
     }
     @Test
+    @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     void createPerson_serverError() throws Exception{
         String newPersonJson = "{\"name\": \"Ricardo\", \"age\":21, \"active\": true}";
 
         when(personService.createPerson(any(Person.class))).thenThrow(new RuntimeException());
         RequestBuilder request = post(BASE_PATH)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()) //Deshabilitamos los Cors (csrf()) - Si no lo hacemos nos saldra el error 403 - No autorizado para realizar dicha acción.
                 .accept(MediaType.APPLICATION_JSON).content(newPersonJson)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -149,11 +157,12 @@ class PersonControllerTest {
     }
 
     @Test
-    void testUpdatePerson_success() throws Exception{
+    void updatePerson_success() throws Exception{
         String newPersonJson = "{\"id\":1,\"name\":\"Ricardo\",\"age\":21,\"active\": true}";
 
         when(personService.updatePerson(any(Person.class))).thenReturn(persons.get(0));
         RequestBuilder request = put(BASE_PATH)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()) //Deshabilitamos los Cors (csrf()) - Si no lo hacemos nos saldra el error 403 - No autorizado para realizar dicha acción.
                 .accept(MediaType.APPLICATION_JSON).content(newPersonJson)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -168,6 +177,7 @@ class PersonControllerTest {
 
         when(personService.updatePerson(any(Person.class))).thenThrow(new RuntimeException());
         RequestBuilder request = put(BASE_PATH)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()) //Deshabilitamos los Cors (csrf()) - Si no lo hacemos nos saldra el error 403 - No autorizado para realizar dicha acción.
                 .accept(MediaType.APPLICATION_JSON).content(newPersonJson)
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -179,7 +189,8 @@ class PersonControllerTest {
     @Test
     void deletePerson_success() throws Exception {
         when(personService.deletePersonById(1)).thenReturn(true);
-        RequestBuilder request = delete(BASE_PATH.concat("/1"));
+        RequestBuilder request = delete(BASE_PATH.concat("/1"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf()); //Deshabilitamos los Cors (csrf()) - Si no lo hacemos nos saldra el error 403 - No autorizado para realizar dicha acción.
         MvcResult result = mvc.perform(request).andReturn();
         assertNotNull(result);
         assertEquals(HttpStatus.NO_CONTENT.value(), result.getResponse().getStatus());
@@ -189,7 +200,8 @@ class PersonControllerTest {
     @Test
     void deletePerson_serverError() throws Exception {
         when(personService.deletePersonById(1)).thenThrow(new RuntimeException());
-        RequestBuilder request = delete(BASE_PATH.concat("/1"));
+        RequestBuilder request = delete(BASE_PATH.concat("/1"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf()); //Deshabilitamos los Cors (csrf()) - Si no lo hacemos nos saldra el error 403 - No autorizado para realizar dicha acción.
         MvcResult result = mvc.perform(request).andReturn();
         assertNotNull(result);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), result.getResponse().getStatus());

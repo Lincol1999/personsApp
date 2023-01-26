@@ -7,25 +7,15 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
-    #    driverClassName: org.postgresql.Driver
-
-#  spring:
-#    jpa:
-#      database: personsdb
-#      show-sql: true
-#      hibernate:
-#        ddl-auto: create-drop
-#        default_schema: personsdb
-#  sql:
-#    init:
-#      platform: postgres
 
   jpa:
     properties:
       hibernate:
 #        Data Driver Lenguaje - Realizar operaciones de tipo create-updaste-drop en la base de Datos
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         ddl-auto: create
         default_schema: persondb
+    show-sql: true
 
 
 

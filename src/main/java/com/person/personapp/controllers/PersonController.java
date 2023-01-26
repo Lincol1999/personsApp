@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class PersonController {
     @Autowired
     private PersonService personService;
 
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping(value = "")
     ResponseEntity<List<Person>> getPersons (){
         try{
@@ -44,6 +46,7 @@ public class PersonController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping(value= "/{id}")
     ResponseEntity<Person> getPersonById (@PathVariable Integer id){
 
@@ -64,6 +67,7 @@ public class PersonController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value="")
     ResponseEntity<Person> createPerson(@RequestBody Person person){
         try {
@@ -76,6 +80,7 @@ public class PersonController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value="")
     ResponseEntity<Person> updatePerson(@RequestBody Person person){
 
@@ -89,13 +94,14 @@ public class PersonController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value="/{id}")
     //Recibe boolean
     ResponseEntity<Boolean> deletePerson( @PathVariable Integer id){
 
         try {
             boolean deleted = personService.deletePersonById(id);
-            log.info("Person {id} deleted", id);
+            log.info("Person {} deleted", id);
             return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT); //Acepta el bool
         }catch(RuntimeException e){
             log.error("Error while deleting person {}", id);
@@ -103,6 +109,7 @@ public class PersonController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value="/actives/{isActive}")
     ResponseEntity<List<Person>> getActivePersons(@PathVariable boolean isActive){
 
