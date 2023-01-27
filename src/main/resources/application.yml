@@ -17,6 +17,9 @@ spring:
         default_schema: persondb
     show-sql: true
 
+#    Flyway Migration
+  flyway:
+    baseline-on-migrate: true #Habilita para administrar la base de datos
 
 
 
